@@ -17,9 +17,9 @@ export function Nav() {
           <li><button onClick={() => scrollTo("workflows")} className="text-[14px] text-text-mid hover:text-text-hi transition-colors bg-transparent border-none cursor-pointer">Workflows</button></li>
         </ul>
         <div className="flex items-center gap-3">
-          <button className="font-body text-[14px] text-text-mid hover:text-text-hi hover:bg-surface-2 transition-colors bg-transparent border-none cursor-pointer px-3 py-1.5 rounded-[8px]">
+          <a href="https://github.com/ThatKJ/orquestra-os" target="_blank" rel="noopener" className="font-body text-[14px] text-text-mid hover:text-text-hi hover:bg-surface-2 transition-colors bg-transparent border-none cursor-pointer px-3 py-1.5 rounded-[8px] no-underline">
             GitHub
-          </button>
+          </a>
           <button
             onClick={() => scrollTo("waitlist")}
             className="font-body text-[14px] font-medium text-[#001f25] bg-cyan border-none cursor-pointer px-[18px] py-2 rounded-[8px] hover:opacity-90 active:scale-[0.98] transition-all tracking-[-0.01em]"

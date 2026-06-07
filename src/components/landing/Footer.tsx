@@ -11,7 +11,7 @@ export function Footer() {
           </div>
           <ul className="flex items-center gap-6 list-none">
             {[
-              { label: 'GitHub', href: 'https://github.com' },
+              { label: 'GitHub', href: 'https://github.com/ThatKJ/orquestra-os' },
               { label: 'Changelog', href: '#' },
               { label: 'Privacy', href: '/privacy' },
               { label: 'Terms', href: '/terms' },
