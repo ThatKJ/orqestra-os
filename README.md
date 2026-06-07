@@ -48,4 +48,4 @@ Open `http://localhost:3000` and join the waitlist.
 
 ---
 
-Built by [ThatKJ](https://github.com/ThatKJ).
+MIT © [ThatKJ](https://github.com/ThatKJ)

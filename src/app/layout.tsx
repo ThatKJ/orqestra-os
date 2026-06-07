@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, DM_Sans, DM_Mono } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const syne = Syne({
@@ -54,6 +55,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
