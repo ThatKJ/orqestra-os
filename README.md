@@ -1,8 +1,9 @@
 <div align="center">
 
-<img src="https://orquestra-os.vercel.app/og.png" alt="Orquestra OS" width="100%" style="max-width:900px;border-radius:12px;" />
+# 🎼 Orquestra OS
 
-<br/>
+### The execution layer for AI workflows.
+
 <br/>
 
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
@@ -20,7 +21,7 @@
 Connect triggers, AI steps, API calls, and conditional logic on a canvas.  
 Every execution is fully traced. Every node is debuggable. Zero boilerplate.
 
-[**→ Live Demo**](https://orquestra-os.vercel.app/) · [**→ Join the Waitlist**](https://orquestra-os.vercel.app/#waitlist) · [**→ Report a Bug**](https://github.com/your-username/orquestra-os/issues)
+[**→ Live Demo**](https://orquestra-os.vercel.app/) · [**→ Join the Waitlist**](https://orquestra-os.vercel.app/#waitlist) · [**→ Report a Bug**](https://github.com/ThatKJ/orquestra-os/issues)
 
 </div>
 
@@ -574,7 +575,7 @@ This is an early-stage MVP. The codebase is intentionally simple — one Express
 
 **Before opening a PR:**
 
-1. Check [open issues](https://github.com/your-username/orquestra-os/issues) to avoid duplicating work
+1. Check [open issues](https://github.com/ThatKJ/orquestra-os/issues) to avoid duplicating work
 2. For new features, open an issue first — the v1 scope boundary is intentional
 3. For bug fixes, a PR with a clear description is enough
 
