@@ -1,107 +1,166 @@
 <div align="center">
 
-```
- ██████╗ ██████╗  ██████╗ ██╗   ██╗███████╗███████╗████████╗██████╗  █████╗
-██╔═══██╗██╔══██╗██╔═══██╗██║   ██║██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗
-██║   ██║██████╔╝██║   ██║██║   ██║█████╗  ███████╗   ██║   ██████╔╝███████║
-██║   ██║██╔══██╗██║▄▄ ██║██║   ██║██╔══╝  ╚════██║   ██║   ██╔══██╗██╔══██║
-╚██████╔╝██║  ██║╚██████╔╝╚██████╔╝███████╗███████║   ██║   ██║  ██║██║  ██║
- ╚═════╝ ╚═╝  ╚═╝ ╚══▀▀═╝  ╚═════╝ ╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
-```
+<img src="https://orquestra-os.vercel.app/og.png" alt="Orquestra OS" width="100%" style="max-width:900px;border-radius:12px;" />
 
-### The execution layer for AI workflows.
+<br/>
+<br/>
 
-**Build · Run · Trace · Debug**
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-404040?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React Flow](https://img.shields.io/badge/React_Flow-latest-FF0072?style=for-the-badge&logo=react&logoColor=white)](https://reactflow.dev/)
+[![SQLite](https://img.shields.io/badge/SQLite-3.x-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-SDK_v4-412991?style=for-the-badge&logo=openai&logoColor=white)](https://platform.openai.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22d3ee?style=for-the-badge)](./LICENSE)
+[![Status](https://img.shields.io/badge/Status-MVP-34d399?style=for-the-badge)](#)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-22d3ee.svg?style=flat-square)](LICENSE)
-[![Node 20+](https://img.shields.io/badge/Node-20+-22d3ee.svg?style=flat-square)](https://nodejs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-818cf8.svg?style=flat-square)](https://www.typescriptlang.org)
-[![Next.js 14](https://img.shields.io/badge/Next.js-14-white.svg?style=flat-square)](https://nextjs.org)
-[![Status: MVP](https://img.shields.io/badge/Status-MVP-34d399.svg?style=flat-square)](#)
+<br/>
+
+**Orquestra OS** is a visual workflow builder where AI is a first-class primitive — not bolted on.  
+Connect triggers, AI steps, API calls, and conditional logic on a canvas.  
+Every execution is fully traced. Every node is debuggable. Zero boilerplate.
+
+[**→ Live Demo**](https://orquestra-os.vercel.app/) · [**→ Join the Waitlist**](https://orquestra-os.vercel.app/#waitlist) · [**→ Report a Bug**](https://github.com/your-username/orquestra-os/issues)
 
 </div>
 
 ---
 
-## What is this
+## 📋 Table of Contents
 
-Orquestra OS is a visual workflow builder where **AI is a first-class primitive**, not bolted on.
-
-You connect triggers, AI steps, API calls, and conditional logic on a canvas. Hit Run. Every node lights up in real-time. Every execution is fully traced — input, output, duration, and status for every step.
-
-No Python boilerplate. No duct-taping n8n with GPT. No raw log spelunking when something breaks.
-
-```
-Trigger → AI Step → Condition → API Call → Output
-           ↓                  ↓ true
-      {{prev.output}}    POST to Slack
-```
+- [Overview](#-overview)
+- [The Problem](#-the-problem)
+- [System Architecture](#-system-architecture)
+- [Quickstart](#-quickstart)
+- [Node Reference](#-node-reference)
+- [Context Passing](#-context-passing)
+- [Execution Trace](#-execution-trace)
+- [API Reference](#-api-reference)
+- [Workflow JSON Schema](#-workflow-json-schema)
+- [Project Structure](#-project-structure)
+- [Example Workflows](#-example-workflows)
+- [Stack Decisions](#-stack-decisions)
+- [Environment Variables](#-environment-variables)
+- [What's in v1 / What's Not](#-whats-in-v1--whats-not)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## The problem it solves
+## 🔍 Overview
+
+Orquestra OS is the execution layer for AI workflows. You build pipelines visually — drag nodes, draw connections, configure steps — then hit Run. The system executes each step in sequence, passes context between nodes automatically, streams logs in real-time via SSE, and stores a full trace of every run.
+
+**Three things that make it different:**
+
+- **AI is a first-class primitive.** Not a plugin, not an integration — every AI step is a native node with built-in context resolution, model selection, and prompt templating.
+- **Every execution is fully observable.** Per-step input, output, duration, status, and retry count. You always know exactly what happened and why.
+- **Zero setup.** Clone, set your API key, run two commands. No Docker, no Postgres, no cloud accounts.
+
+---
+
+## 🧩 The Problem
 
 | Tool | What breaks |
-|------|------------|
-| **n8n / Zapier** | AI is bolted on. Every step is an island. No shared context, no prompt chaining. |
-| **LangChain / LangGraph** | The floor is Python + abstractions. Non-developers can't touch it. |
-| **Custom backends** | You rebuild retry logic, context passing, and execution history from scratch. Every. Time. |
+|------|-------------|
+| **n8n / Zapier** | AI is bolted on as an afterthought. Every step is an island — no shared context, no prompt chaining, no reasoning across nodes. |
+| **LangChain / LangGraph** | Powerful, but the floor is Python + abstractions. Non-developers can't touch it. Even developers spend more time on boilerplate than logic. |
+| **Custom backends** | You rebuild retry logic, context passing, execution history, and API adapters from scratch on every project. |
 
 Orquestra fills the gap: visual enough for a PM, powerful enough for a developer, debuggable enough for production.
 
 ---
 
-## Demo
+## 🏗️ System Architecture
 
-> *3 example workflows ship with the repo. Clone, set your API key, run.*
+```mermaid
+graph TB
+    subgraph FE["🖥️ Frontend — Next.js 14 (App Router)"]
+        CANVAS[Canvas.tsx\nReact Flow Wrapper]
+        NODES[Custom Nodes\nTrigger · AI · API · Condition · Output]
+        TOOLBAR[Toolbar.tsx\nAdd Node Buttons]
+        RUN[RunButton.tsx\nTriggers Execution]
+        PANEL[ExecutionPanel.tsx\nSSE Log Consumer]
+        STORE[workflowStore.ts\nZustand State]
+        SERIAL[serialize.ts\nReact Flow → Workflow JSON]
+    end
 
-### Workflow 1 — Summarize + Slack Notify
-```
-Trigger → AI: Summarize → Condition: Is it urgent? → API: POST to Slack → Output
-```
+    subgraph BE["⚙️ Backend — Express + Node 20"]
+        ROUTES_WF[routes/workflows.ts\nCRUD Endpoints]
+        ROUTES_EX[routes/executions.ts\nRun + Log Endpoints]
+        EXEC[engine/executor.ts\nexecuteWorkflow · executeStep]
+        CTX[engine/context.ts\n{{prev.output}} Resolver]
+        LOG[engine/logger.ts\nExecution Log Writer]
+        SSE[SSE Stream\nReal-time Step Events]
+    end
 
-### Workflow 2 — Customer Feedback Analyzer
-```
-Trigger → AI: Classify sentiment → AI: Extract action items → API: Save to Notion → Output
-```
+    subgraph TOOLS["🔧 Tool Adapters"]
+        OPENAI[tools/callOpenAI.ts\nOpenAI SDK v4]
+        CALLAPI[tools/callAPI.ts\nAxios HTTP Adapter]
+    end
 
-### Workflow 3 — Content Pipeline
-```
-Trigger → AI: Generate blog outline → AI: Write intro from outline → Output
+    subgraph DB["💾 Storage — better-sqlite3"]
+        WF_TABLE[workflows\nid · name · json · createdAt]
+        EX_TABLE[executions\nid · workflowId · steps · status]
+    end
+
+    subgraph AI["🤖 OpenAI"]
+        GPT4O[gpt-4o]
+        GPT4OMINI[gpt-4o-mini]
+    end
+
+    CANVAS --> NODES
+    NODES --> STORE
+    TOOLBAR --> STORE
+    STORE --> SERIAL
+    RUN -->|POST /api/workflows/:id/run| ROUTES_EX
+    SERIAL -->|POST /api/workflows/:id| ROUTES_WF
+    ROUTES_WF --> DB
+    ROUTES_EX --> EXEC
+    EXEC --> CTX
+    CTX --> OPENAI
+    CTX --> CALLAPI
+    EXEC --> LOG
+    LOG --> EX_TABLE
+    EXEC --> SSE
+    SSE -->|EventSource| PANEL
+    OPENAI --> AI
 ```
 
 ---
 
-## Quickstart
+## 🚀 Quickstart
 
 ### Prerequisites
 
-- Node 20+
-- An OpenAI API key
+- **Node.js 20+**
+- **npm 9+**
+- **OpenAI API key** — [get one here](https://platform.openai.com/api-keys)
 
-### 1. Clone
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/your-username/orquestra-os.git
 cd orquestra-os
 ```
 
-### 2. Configure environment
+### 2. Configure environment variables
 
 ```bash
-# Backend
 cp .env.example backend/.env
 ```
 
+Edit `backend/.env`:
+
 ```env
-# backend/.env
 OPENAI_API_KEY=sk-...
 PORT=3001
 DB_PATH=./data/workflows.db
 ```
 
+Create `frontend/.env.local`:
+
 ```env
-# frontend/.env.local
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
@@ -120,8 +179,13 @@ cd ../frontend && npm install
 ```bash
 cd backend
 npm run dev
-# → Express running on http://localhost:3001
-# → SQLite database initialized at ./data/workflows.db
+```
+
+```
+→ Express running on http://localhost:3001
+→ SQLite database initialized at ./data/workflows.db
+→ Workflows table ready
+→ Executions table ready
 ```
 
 ### 5. Start the frontend
@@ -129,114 +193,156 @@ npm run dev
 ```bash
 cd frontend
 npm run dev
-# → Next.js running on http://localhost:3000
+```
+
+```
+→ Next.js running on http://localhost:3000
+→ Connected to backend at http://localhost:3001
 ```
 
 ### 6. Open the builder
 
-Navigate to `http://localhost:3000`. You'll see the workflow list with 3 prebuilt examples ready to run.
+Navigate to `http://localhost:3000`. Three prebuilt example workflows are ready to run.
 
 ---
 
-## How it works
+## 🔷 Node Reference
 
-### The canvas
-
-Open any workflow in the builder. You'll see a dot-grid canvas with draggable nodes and connectors.
-
-- **Sidebar** — drag any of the 5 node types onto the canvas
-- **Node config** — click any node to edit its properties
-- **Connect nodes** — drag from one node's output port to the next node's input port
-- **Run** — hit the Run button. Watch each node activate in sequence.
-
-### Context passing
-
-Every node's output is accessible to every downstream node via `{{prev.output}}`.
-
-```
-AI Step prompt:
-"Summarize the following in 3 bullet points:\n{{prev.output}}"
-
-API Call body:
-{"text": "{{prev.output}}"}
-```
-
-The context resolver handles object-to-string coercion, multi-branch paths, and nested dot-path access automatically.
-
-### Execution trace
-
-Every run is stored in SQLite and streamed live via SSE. The execution panel shows:
-
-```
-10:00:00.012  [trigger]    received input "Analyze this customer feedback..."       12ms    ✓
-10:00:00.015  [ai_step]    prompt resolved · calling gpt-4o-mini · temp=0.3
-10:00:01.240  [ai_step]    complete · "sentiment: negative, actions: [...]"      1,225ms   ✓
-10:00:01.243  [condition]  sentiment equals "negative" → branch: true               1ms    ✓
-10:00:01.245  [api_call]   POST https://hooks.slack.com/...                        614ms   ✓
-10:00:01.860  [output]     done                                                      0ms    ✓
-```
-
-Failed steps auto-retry once. The retry attempt and original error are both logged.
-
----
-
-## Node reference
+Orquestra OS ships with **5 node types**. No more in v1 — the goal is a clean, debuggable core.
 
 ### 🟢 Trigger
-Entry point. Manual run button for MVP. Accepts an initial input payload that flows into the first downstream node.
+Entry point of every workflow. Manual run button for MVP. The `initialInput` value becomes the first `{{prev.output}}` in the pipeline.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `initialInput` | `string` | The value passed to `{{prev.output}}` for the first step |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `initialInput` | `string` | ✓ | The payload passed downstream as the first context value |
 
 ---
 
 ### 🟣 AI Step
-Calls OpenAI. The prompt supports `{{prev.output}}` templating. Output becomes the context for the next node.
+Calls OpenAI with a templated prompt. Supports `{{prev.output}}` anywhere in the prompt string. The model's response becomes the output for the next node.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `prompt` | `string` | Prompt template. Use `{{prev.output}}` to reference previous step. |
-| `model` | `gpt-4o` \| `gpt-4o-mini` | Model to use. Default: `gpt-4o-mini` |
-| `temperature` | `number` | 0–2. Default: `0.7` |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `prompt` | `string` | ✓ | Prompt template. Supports `{{prev.output}}` interpolation |
+| `model` | `gpt-4o` \| `gpt-4o-mini` | ✓ | Model to use. Default: `gpt-4o-mini` |
+| `temperature` | `number` (0–2) | — | Sampling temperature. Default: `0.7` |
 
 ---
 
 ### 🟡 API Call
-Generic HTTP request. Body can reference previous outputs via template syntax. Handles 200 vs 4xx branching automatically.
+Generic HTTP request node. The body field supports `{{prev.output}}` template syntax. Handles 2xx success and 4xx/5xx failure branches automatically.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `url` | `string` | Endpoint URL |
-| `method` | `GET` \| `POST` \| `PUT` | HTTP method |
-| `headers` | `object` | Key-value headers |
-| `body` | `string` | JSON template. Supports `{{prev.output}}` |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `url` | `string` | ✓ | Full endpoint URL |
+| `method` | `GET` \| `POST` \| `PUT` | ✓ | HTTP method |
+| `headers` | `object` | — | Key-value header pairs |
+| `body` | `string` | — | JSON body template. Supports `{{prev.output}}` |
 
 ---
 
 ### 🔴 Condition
-If/else branch on previous output. Routes execution to the `true` or `false` downstream path.
+If/else branch node. Evaluates a field on the previous output and routes execution to the `true` or `false` downstream path.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `field` | `string` | Dot-path to evaluate (e.g. `prev.output`) |
-| `operator` | `contains` \| `equals` \| `gt` \| `lt` | Comparison operator |
-| `value` | `string` | Value to compare against |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `field` | `string` | ✓ | Dot-path to evaluate (e.g. `prev.output`) |
+| `operator` | `contains` \| `equals` \| `gt` \| `lt` | ✓ | Comparison operator |
+| `value` | `string` | ✓ | Value to compare against |
 
 ---
 
 ### ⚫ Output
-Terminal node. Captures the final result and displays it in the execution panel. Every workflow must end here.
+Terminal node. Every workflow must end here. Captures the final result and displays it in the execution panel.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `label` | `string` | Display label for this output |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `label` | `string` | ✓ | Display label for this output in the execution panel |
 
 ---
 
-## Workflow JSON schema
+## 🔗 Context Passing
 
-Workflows are stored and transmitted as plain JSON. The frontend serializes the canvas to this format. The backend deserializes it to execute.
+Context flows between nodes via the `{{prev.output}}` template syntax. The context resolver handles this in `engine/context.ts`.
+
+**In an AI Step prompt:**
+```
+Summarize the following feedback in 3 bullet points:
+
+{{prev.output}}
+```
+
+**In an API Call body:**
+```json
+{
+  "text": "{{prev.output}}",
+  "source": "orquestra-pipeline"
+}
+```
+
+**In a Condition field:**
+```
+field:    prev.output
+operator: contains
+value:    negative
+```
+
+The resolver automatically coerces object outputs to strings, handles multi-branch path resolution, and supports nested dot-path access on structured outputs.
+
+---
+
+## 📊 Execution Trace
+
+Every run is stored in SQLite and streamed live to the frontend via SSE. The execution panel shows a real-time log of every step:
+
+```
+10:00:00.012  [trigger]    received input "Analyze this customer feedback..."        12ms  ✓
+10:00:00.015  [ai_step]    prompt resolved · calling gpt-4o-mini · temp=0.3
+10:00:01.240  [ai_step]    complete · "sentiment: negative, actions: [...]"       1,225ms  ✓
+10:00:01.243  [condition]  prev.output contains "negative" → branch: true             1ms  ✓
+10:00:01.245  [api_call]   POST https://hooks.slack.com/... → 200 OK               614ms  ✓
+10:00:01.860  [output]     done                                                        0ms  ✓
+```
+
+**SSE event stream from `/api/workflows/:id/run`:**
+
+```
+event: step_start
+data: {"nodeId":"n2","nodeType":"ai","label":"Summarize","startedAt":"..."}
+
+event: step_complete
+data: {"nodeId":"n2","status":"success","durationMs":1225,"output":{"value":"..."}}
+
+event: step_retry
+data: {"nodeId":"n4","attempt":1,"error":"Network timeout","retryAt":"..."}
+
+event: workflow_complete
+data: {"executionId":"ex_xyz789","status":"success","totalMs":1840}
+```
+
+Failed steps auto-retry once. The retry attempt and original error are both persisted in the execution log.
+
+---
+
+## 🌐 API Reference
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET` | `/api/workflows` | List all workflows with metadata |
+| `POST` | `/api/workflows` | Create a new workflow. Returns `{ id }` |
+| `GET` | `/api/workflows/:id` | Fetch workflow with full node + edge definition |
+| `POST` | `/api/workflows/:id` | Save / overwrite workflow (full JSON body) |
+| `DELETE` | `/api/workflows/:id` | Delete workflow and all associated execution logs |
+| `POST` | `/api/workflows/:id/run` | Execute workflow. Returns `execution_id` + SSE stream |
+| `GET` | `/api/executions/:id` | Fetch full execution log with per-step I/O |
+| `GET` | `/api/workflows/:id/executions` | List all past executions for a workflow |
+
+---
+
+## 📐 Workflow JSON Schema
+
+Workflows are stored and transmitted as plain JSON. The frontend serializes the React Flow canvas to this format via `serialize.ts`. The backend execution engine deserializes it in `executor.ts`. No deviation from this schema in v1.
 
 ```json
 {
@@ -299,155 +405,196 @@ Workflows are stored and transmitted as plain JSON. The frontend serializes the 
 
 ---
 
-## API reference
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| `GET` | `/api/workflows` | List all workflows |
-| `POST` | `/api/workflows` | Create workflow, returns `id` |
-| `GET` | `/api/workflows/:id` | Fetch workflow with full node/edge definition |
-| `POST` | `/api/workflows/:id` | Save / overwrite workflow |
-| `DELETE` | `/api/workflows/:id` | Delete workflow and all execution history |
-| `POST` | `/api/workflows/:id/run` | Execute workflow. Returns `execution_id` + SSE stream |
-| `GET` | `/api/executions/:id` | Fetch full execution log with per-step I/O |
-| `GET` | `/api/workflows/:id/executions` | List all past executions for a workflow |
-
-The `/run` endpoint streams step events via SSE:
-
-```
-event: step_start
-data: {"nodeId":"n2","nodeType":"ai","label":"Summarize"}
-
-event: step_complete
-data: {"nodeId":"n2","status":"success","durationMs":1225,"output":{"value":"..."}}
-
-event: step_retry
-data: {"nodeId":"n4","attempt":1,"error":"Network timeout"}
-
-event: workflow_complete
-data: {"executionId":"ex_xyz789","status":"success","totalMs":1840}
-```
-
----
-
-## Project structure
+## 📂 Project Structure
 
 ```
 orquestra-os/
+│
 ├── backend/
-│   └── src/
-│       ├── index.ts                  # Express app entry
-│       ├── db/
-│       │   ├── schema.ts             # SQLite table definitions
-│       │   └── queries.ts            # All DB read/write operations
-│       ├── engine/
-│       │   ├── executor.ts           # executeWorkflow(), executeStep()
-│       │   ├── context.ts            # {{prev.output}} resolver
-│       │   └── logger.ts             # Execution log writer
-│       ├── tools/
-│       │   ├── callOpenAI.ts         # AI step adapter
-│       │   ├── callAPI.ts            # HTTP step adapter
-│       │   └── index.ts              # Tool registry
-│       └── routes/
-│           ├── workflows.ts          # CRUD routes
-│           └── executions.ts         # Run + log routes
+│   ├── src/
+│   │   ├── index.ts                    # Express app entry + middleware
+│   │   ├── db/
+│   │   │   ├── schema.ts               # SQLite table definitions
+│   │   │   └── queries.ts              # All DB read / write operations
+│   │   ├── engine/
+│   │   │   ├── executor.ts             # executeWorkflow() · executeStep()
+│   │   │   ├── context.ts              # {{prev.output}} resolver
+│   │   │   └── logger.ts               # Execution log writer
+│   │   ├── tools/
+│   │   │   ├── callOpenAI.ts           # OpenAI SDK v4 adapter
+│   │   │   ├── callAPI.ts              # Axios HTTP adapter
+│   │   │   └── index.ts                # Tool registry (MCP-ready interface)
+│   │   └── routes/
+│   │       ├── workflows.ts            # CRUD routes
+│   │       └── executions.ts           # Run + log routes
+│   ├── package.json
+│   └── tsconfig.json
 │
 ├── frontend/
-│   └── src/
-│       ├── app/
-│       │   ├── page.tsx              # Workflow list
-│       │   └── builder/[id]/page.tsx # Canvas builder
-│       ├── components/
-│       │   ├── nodes/                # TriggerNode, AINode, APINode, ConditionNode, OutputNode
-│       │   ├── workflow/             # Canvas, Toolbar, RunButton
-│       │   └── logs/                 # ExecutionPanel
-│       ├── lib/
-│       │   ├── api.ts                # Fetch wrappers
-│       │   └── serialize.ts          # React Flow → workflow JSON
-│       └── store/
-│           └── workflowStore.ts      # Zustand state
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── page.tsx                # Workflow list
+│   │   │   ├── builder/[id]/
+│   │   │   │   └── page.tsx            # Canvas builder
+│   │   │   └── layout.tsx
+│   │   ├── components/
+│   │   │   ├── nodes/
+│   │   │   │   ├── TriggerNode.tsx     # 🟢 Trigger node
+│   │   │   │   ├── AINode.tsx          # 🟣 AI step node
+│   │   │   │   ├── APINode.tsx         # 🟡 API call node
+│   │   │   │   ├── ConditionNode.tsx   # 🔴 Condition node
+│   │   │   │   └── OutputNode.tsx      # ⚫ Output node
+│   │   │   ├── workflow/
+│   │   │   │   ├── Canvas.tsx          # React Flow wrapper
+│   │   │   │   ├── Toolbar.tsx         # Add node buttons
+│   │   │   │   └── RunButton.tsx       # Trigger execution
+│   │   │   └── logs/
+│   │   │       └── ExecutionPanel.tsx  # SSE log consumer + display
+│   │   ├── lib/
+│   │   │   ├── api.ts                  # Typed fetch wrappers
+│   │   │   └── serialize.ts            # React Flow → workflow JSON
+│   │   └── store/
+│   │       └── workflowStore.ts        # Zustand workflow state
+│   ├── package.json
+│   └── tsconfig.json
 │
 ├── .env.example
+├── LICENSE
 └── README.md
 ```
 
 ---
 
-## Stack
+## 🧪 Example Workflows
+
+Three production workflows ship with the repo. Open them from the workflow list on first launch.
+
+### 01 — Summarize + Slack Notify
+Summarize any text with AI, detect urgency via a condition branch, and POST to Slack if flagged.
+
+```
+Trigger → AI: Summarize (gpt-4o-mini) → Condition: Is urgent? ──true──→ API: POST to Slack → Output
+                                                                └─false─→ Output
+```
+
+### 02 — Customer Feedback Analyzer
+Classify sentiment, extract action items with a second AI pass, then push structured results to Notion.
+
+```
+Trigger → AI: Classify sentiment → AI: Extract action items → API: POST to Notion → Output
+```
+
+### 03 — Content Pipeline
+Generate a blog outline with one AI node, then pass that outline as context into a second AI node to write the intro.
+
+```
+Trigger → AI: Generate outline → AI: Write intro from {{prev.output}} → Output
+```
+
+---
+
+## ⚙️ Stack Decisions
 
 **Frontend**
 
 | Package | Version | Why |
 |---------|---------|-----|
-| Next.js | 14 | App Router, file-based routing |
-| React Flow | latest | Canvas rendering only — no business logic |
-| Tailwind CSS | 3.x | Styling |
-| TypeScript | 5.x | Type safety throughout |
-| Zustand | 4.x | Workflow state — no Redux ceremony |
+| [Next.js](https://nextjs.org/) | 14 (App Router) | File-based routing, React Server Components, zero config |
+| [React Flow](https://reactflow.dev/) | latest | Canvas rendering only — no business logic lives here |
+| [Tailwind CSS](https://tailwindcss.com/) | 3.x | Utility-first, fast iteration |
+| [TypeScript](https://www.typescriptlang.org/) | 5.x | Type safety across the full stack |
+| [Zustand](https://zustand-demo.pmnd.rs/) | 4.x | Workflow state — no Redux ceremony needed at this scale |
 
 **Backend**
 
 | Package | Version | Why |
 |---------|---------|-----|
-| Express.js | 4.x | HTTP server — large ecosystem, easy to debug |
-| TypeScript | 5.x | Type safety throughout |
-| better-sqlite3 | latest | SQLite — zero setup, file-based, no Postgres for MVP |
-| OpenAI SDK | v4 | AI step calls |
-| Axios | latest | API call nodes |
+| [Express.js](https://expressjs.com/) | 4.x | Larger ecosystem, easier to debug than Fastify |
+| [TypeScript](https://www.typescriptlang.org/) | 5.x | Same types shared with frontend |
+| [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) | latest | Zero setup, file-based, synchronous API — perfect for MVP |
+| [OpenAI SDK](https://github.com/openai/openai-node) | v4 | Official SDK, streaming-ready for v2 |
+| [Axios](https://axios-http.com/) | latest | HTTP adapter for API call nodes |
 
-**Communication** — REST + SSE for live execution events. No WebSockets, no polling.
+**Communication** — REST + Server-Sent Events (SSE) for live execution streaming. No WebSockets, no polling. SSE is 20 lines of code and solves the real-time log problem cleanly.
 
-**Storage** — SQLite for MVP. Schema is designed to migrate to Postgres without breaking changes.
+**Storage** — SQLite for MVP. Schema is intentionally portable — migration to Postgres requires no logic changes, only driver swap.
 
 ---
 
-## What's in v1 / what's not
+## 🔑 Environment Variables
 
-### ✅ In v1
+```env
+# ─── Backend (.env) ──────────────────────────────────────────
+OPENAI_API_KEY=sk-...          # Required. Your OpenAI API key.
+PORT=3001                      # Port for the Express server.
+DB_PATH=./data/workflows.db    # Path to the SQLite database file.
+
+# ─── Frontend (.env.local) ───────────────────────────────────
+NEXT_PUBLIC_API_URL=http://localhost:3001   # Backend URL for client-side fetch.
+```
+
+A `.env.example` file is included in the repo root. Copy it to `backend/.env` and fill in your values.
+
+---
+
+## ✅ What's in v1 / What's Not
+
+### In v1
 
 - Visual canvas — React Flow with 5 node types
-- `{{prev.output}}` context passing between all node types
+- `{{prev.output}}` context passing across all node types
 - Sequential + conditional execution (true/false branches)
-- Per-step execution trace: input, output, duration, status
-- 1× auto-retry on failure
+- Per-step execution trace — input, output, duration, status, retry count
+- 1× auto-retry on step failure
 - SSE real-time log streaming
 - SQLite persistence — workflows survive page reload
-- 3 prebuilt example workflows
-- Local-only — no auth, no cloud, no accounts
+- 3 prebuilt example workflows ready to fork and run
+- Local-only — no auth, no accounts, no cloud required
 
-### ❌ Not in v1
+### Not in v1
 
 - Cron / webhook triggers
+- User authentication + multi-tenancy
 - Parallel execution branches
-- Sub-workflows
-- Other LLM providers (Anthropic, Gemini)
-- Streaming LLM responses
+- Sub-workflows / nested pipelines
+- Other LLM providers (Anthropic, Google Gemini, etc.)
+- Streaming LLM token responses
 - MCP server integration
-- Cloud deployment
-- Auth / multi-tenancy
+- Cloud / hosted deployment
 - Versioned workflow history
 - Team collaboration
 
+These are intentional exclusions. The v1 goal is a clean, debuggable core — not a feature surface.
+
 ---
 
-## Contributing
+## 🤝 Contributing
 
 This is an early-stage MVP. The codebase is intentionally simple — one Express server, one Next.js app, one SQLite file.
 
-If you find a bug or want to add something:
+**Before opening a PR:**
 
-1. Fork the repo
-2. Create a branch: `git checkout -b fix/your-thing`
-3. Make your change
-4. Open a PR with a clear description of what and why
+1. Check [open issues](https://github.com/your-username/orquestra-os/issues) to avoid duplicating work
+2. For new features, open an issue first — the v1 scope boundary is intentional
+3. For bug fixes, a PR with a clear description is enough
 
-Before adding a feature, open an issue first. The v1 scope boundary is intentional — the goal is a clean, debuggable core before adding surface area.
+**Workflow:**
+
+```bash
+git checkout -b fix/your-thing   # or feat/your-thing
+# make your change
+git commit -m "fix: clear description of what and why"
+git push origin fix/your-thing
+# open a PR
+```
+
+**Commit convention** — `fix:` · `feat:` · `refactor:` · `docs:` · `chore:`
 
 ---
 
-## License
+## 📄 License
 
-MIT — do whatever you want with it.
+MIT — do whatever you want with it. Attribution appreciated but not required.
 
 ---
 
@@ -455,6 +602,6 @@ MIT — do whatever you want with it.
 
 Built in public · June 2026
 
-[Website](https://orquestra.so) · [Join the waitlist](https://orquestra.so/#waitlist) · [Open an issue](https://github.com/your-username/orquestra-os/issues)
+[Website](https://orquestra-os.vercel.app) · [Waitlist](https://orquestra-os.vercel.app/#waitlist) · [Issues](https://github.com/ThatKJ/orquestra-os/issues)
 
 </div>
