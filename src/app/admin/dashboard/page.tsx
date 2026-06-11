@@ -63,7 +63,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
           <div>
             <h1 className="text-lg font-semibold text-on-surface">Dashboard</h1>
             <p className="text-sm text-on-surface-variant">
-              Orquestra OS Waitlist
+              Orqestra OS Waitlist
             </p>
           </div>
           <Badge variant="primary">{totalSignups} signups</Badge>

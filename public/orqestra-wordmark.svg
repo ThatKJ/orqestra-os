@@ -1,0 +1,7 @@
+<svg width="320" height="80" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>Orqestra OS Wordmark</title>
+  <desc>Orqestra OS wordmark</desc>
+  <rect width="320" height="80" fill="#0A0A0A"/>
+  <text x="16" y="46" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="38" font-weight="400" fill="#FFFFFF" letter-spacing="-0.5">Orqestra</text>
+  <text x="16" y="68" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="18" font-weight="500" fill="#6366F1" letter-spacing="3">OS</text>
+</svg>

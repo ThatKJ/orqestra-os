@@ -26,23 +26,14 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Orquestra OS — The execution layer for AI workflows",
+  title: "Orqestra OS — The execution layer for AI workflows",
   description:
     "Connect AI models, APIs, and logic into production-grade workflows. Visual builder. Full execution trace. No boilerplate.",
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-  },
-  manifest: "/site.webmanifest",
-  other: {
-    "apple-mobile-web-app-title": "Orquestra OS",
+    icon: "/orqestra-favicon.svg",
   },
   openGraph: {
-    title: "Orquestra OS",
+    title: "Orqestra OS",
     description: "The execution layer for AI workflows.",
     type: "website",
   },

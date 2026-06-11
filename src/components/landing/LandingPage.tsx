@@ -540,30 +540,13 @@ function Nav({ onWaitlist }: { onWaitlist: () => void }) {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <Image
-          src="/dark_logo.png"
+          src="/orqestra-wordmark.svg"
           alt="Orqestra"
-          width={26}
-          height={26}
-          style={{ borderRadius: 6 }}
+          width={180}
+          height={45}
+          style={{ objectFit: "contain" }}
+          priority
         />
-        <span style={{
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontWeight: 700,
-          fontSize: 15,
-          color: C.textPrimary,
-          letterSpacing: "-0.01em",
-        }}>Orqestra</span>
-        <span style={{
-          fontSize: 9,
-          fontWeight: 600,
-          color: C.primary,
-          background: C.indigo100,
-          border: `1px solid rgba(99,102,241,0.3)`,
-          borderRadius: 4,
-          padding: "2px 6px",
-          letterSpacing: "0.08em",
-          fontFamily: "'Inter', sans-serif",
-        }}>BETA</span>
       </div>
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <button
@@ -1621,15 +1604,12 @@ function Footer() {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <Image
-          src="/dark_logo.png"
+          src="/orqestra-wordmark.svg"
           alt="Orqestra"
-          width={20}
-          height={20}
-          style={{ borderRadius: 4 }}
+          width={140}
+          height={35}
+          style={{ objectFit: "contain" }}
         />
-        <span style={{ fontSize: 13, color: C.textMuted, fontWeight: 500 }}>
-          Orqestra OS — The Control Plane for AI Systems
-        </span>
       </div>
       <div style={{ display: "flex", gap: 24, fontSize: 13, color: C.textMuted }}>
         <a href="#" style={{ color: C.textMuted, textDecoration: "none", transition: "color 0.2s ease" }}>X / Twitter</a>

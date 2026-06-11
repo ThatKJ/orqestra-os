@@ -2,7 +2,7 @@
 
 <br/>
 
-# 🎼 Orquestra OS
+# 🎼 Orqestra OS
 
 ### The execution layer for AI workflows.
 

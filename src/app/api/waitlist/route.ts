@@ -89,9 +89,9 @@ export async function POST(request: NextRequest) {
     // Welcome email to the signup user
     try {
       await transporter.sendMail({
-        from: `"Orquestra OS" <${from}>`,
+        from: `"Orqestra OS" <${from}>`,
         to: email,
-        subject: "You're on the Orquestra waitlist",
+        subject: "You're on the Orqestra waitlist",
         text: [
           `Hey,`,
           ``,
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
           ``,
           `We'll let you know the moment early access opens.`,
           ``,
-          `Why we're building Orquestra`,
+          `Why we're building Orqestra`,
           ``,
           `AI is powerful.`,
           ``,
@@ -115,9 +115,9 @@ export async function POST(request: NextRequest) {
           ``,
           `You spend more time moving information between tools than actually building.`,
           ``,
-          `What Orquestra does`,
+          `What Orqestra does`,
           ``,
-          `Orquestra is the operating system for AI workflows.`,
+          `Orqestra is the operating system for AI workflows.`,
           ``,
           `Connect your models, tools, APIs, agents, and automations in one place.`,
           ``,
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
           ``,
           `— Kirtan`,
           ``,
-          `Founder, Orquestra`,
+          `Founder, Orqestra`,
         ].join("\n"),
         html: [
           `<!DOCTYPE html>`,
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
           /* Header */
           `<tr><td style="padding:40px 40px 0;">`,
           `<table role="presentation" width="100%"><tr>`,
-          `<td style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:#F8FAFC;letter-spacing:-0.02em;">Orquestra</td>`,
+          `<td><svg width="160" height="40" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg"><text x="0" y="46" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="38" font-weight="400" fill="#F8FAFC" letter-spacing="-0.5">Orqestra</text><text x="0" y="68" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="18" font-weight="500" fill="#6366F1" letter-spacing="3">OS</text></svg></td>`,
           `<td align="right"><span style="display:inline-block;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:600;color:#6366F1;letter-spacing:0.08em;">BETA</span></td>`,
           `</tr></table>`,
           `</td></tr>`,
@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
           /* Why we're building */
           `<tr><td style="padding:0 40px;"><div style="height:1px;background:#1E1E2E;"></div></td></tr>`,
           `<tr><td style="padding:24px 40px 0;font-size:15px;line-height:1.7;color:#94A3B8;">`,
-          `<h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#F8FAFC;margin:0 0 16px;letter-spacing:-0.02em;">Why we're building Orquestra</h2>`,
+          `<h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#F8FAFC;margin:0 0 16px;letter-spacing:-0.02em;">Why we're building Orqestra</h2>`,
           `<p style="margin:0 0 16px;">AI is powerful.</p>`,
           `<p style="margin:0 0 16px;">But building with AI is chaos.</p>`,
           `<p style="margin:0 0 16px;">Today your workflow probably looks like:</p>`,
@@ -205,11 +205,11 @@ export async function POST(request: NextRequest) {
           `<p style="margin:0 0 24px;">You spend more time moving information between tools than actually building.</p>`,
           `</td></tr>`,
 
-          /* What Orquestra does */
+          /* What Orqestra does */
           `<tr><td style="padding:0 40px;"><div style="height:1px;background:#1E1E2E;"></div></td></tr>`,
           `<tr><td style="padding:24px 40px 0;font-size:15px;line-height:1.7;color:#94A3B8;">`,
-          `<h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#F8FAFC;margin:0 0 16px;letter-spacing:-0.02em;">What Orquestra does</h2>`,
-          `<p style="margin:0 0 16px;font-size:16px;color:#F8FAFC;font-weight:500;">Orquestra is the operating system for AI workflows.</p>`,
+          `<h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#F8FAFC;margin:0 0 16px;letter-spacing:-0.02em;">What Orqestra does</h2>`,
+          `<p style="margin:0 0 16px;font-size:16px;color:#F8FAFC;font-weight:500;">Orqestra is the operating system for AI workflows.</p>`,
           `<p style="margin:0 0 16px;">Connect your models, tools, APIs, agents, and automations in one place.</p>`,
           `<p style="margin:0 0 8px;">Build workflows once.</p>`,
           `<p style="margin:0 0 8px;">Run them anywhere.</p>`,
@@ -248,14 +248,14 @@ export async function POST(request: NextRequest) {
           `<p style="margin:0 0 16px;">We think there should be one place where everything connects.</p>`,
           `<p style="margin:0 0 24px;">If that's a problem you feel every day, you're exactly who we're building for.</p>`,
           `<p style="margin:0 0 8px;color:#F8FAFC;">— Kirtan</p>`,
-          `<p style="margin:0 0 0;color:#475569;">Founder, Orquestra</p>`,
+          `<p style="margin:0 0 0;color:#475569;">Founder, Orqestra</p>`,
           `</td></tr>`,
 
           `</table>`,
           /* Footer */
           `<table role="presentation" width="560" cellpadding="0" cellspacing="0">`,
           `<tr><td style="padding:16px 40px 0;text-align:center;font-size:11px;color:#475569;">`,
-          `Orquestra OS — The Control Plane for AI Systems`,
+          `Orqestra OS — The Control Plane for AI Systems`,
           `</td></tr></table>`,
 
           `</td></tr></table>`,
@@ -272,11 +272,11 @@ export async function POST(request: NextRequest) {
     if (notificationEmail) {
       try {
         await transporter.sendMail({
-          from: `"Orquestra OS" <${from}>`,
+          from: `"Orqestra OS" <${from}>`,
           to: notificationEmail,
           subject: `New Waitlist Signup: ${email}`,
           text: [
-            `New waitlist signup for Orquestra OS`,
+            `New waitlist signup for Orqestra OS`,
             ``,
             `Email: ${email}`,
             `Name: ${name || "—"}`,

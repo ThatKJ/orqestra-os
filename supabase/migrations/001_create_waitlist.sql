@@ -1,5 +1,5 @@
 -- Migration: 001_create_waitlist
--- Description: Creates the waitlist table for Orquestra OS signups
+-- Description: Creates the waitlist table for Orqestra OS signups
 
 create table if not exists public.waitlist (
   id uuid primary key default gen_random_uuid(),
