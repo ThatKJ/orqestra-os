@@ -721,7 +721,6 @@ function Hero({ onWaitlist }: { onWaitlist: () => void }) {
               gap: 8,
             }}
           >
-            <span>⚡</span>
             Join 1,400+ founders on the waitlist →
           </button>
         </div>
@@ -734,23 +733,6 @@ function Hero({ onWaitlist }: { onWaitlist: () => void }) {
           marginTop: 24,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ display: "flex" }}>
-              {["#6366F1", "#818CF8", "#10B981", "#A78BFA", "#F59E0B"].map((c, i) => (
-                <div key={i} style={{
-                  width: 22, height: 22,
-                  borderRadius: "50%",
-                  background: c,
-                  border: `2px solid ${C.bg}`,
-                  marginLeft: i > 0 ? -8 : 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 9,
-                  color: "white",
-                  fontWeight: 700,
-                }} />
-              ))}
-            </div>
             <span style={{ fontSize: 13, color: C.textMuted }}>
               <strong style={{ color: C.textSecondary }}>1,400+ founders</strong> on the waitlist
             </span>
