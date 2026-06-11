@@ -1594,7 +1594,7 @@ function Footer() {
         />
       </div>
       <div style={{ display: "flex", gap: 24, fontSize: 13, color: C.textMuted }}>
-        <a href="#" style={{ color: C.textMuted, textDecoration: "none", transition: "color 0.2s ease" }}>X / Twitter</a>
+        <a href="#" style={{ color: C.textMuted, textDecoration: "none", transition: "color 0.2s ease", display: "none" }}>X</a>
         <a href="https://github.com/ThatKJ/orqestra-os" target="_blank" rel="noopener noreferrer" style={{ color: C.textMuted, textDecoration: "none", transition: "color 0.2s ease" }}>GitHub</a>
         <a href="/privacy" style={{ color: C.textMuted, textDecoration: "none", transition: "color 0.2s ease" }}>Privacy</a>
         <a href="/terms" style={{ color: C.textMuted, textDecoration: "none", transition: "color 0.2s ease" }}>Terms</a>
