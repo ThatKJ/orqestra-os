@@ -184,6 +184,22 @@ const GlobalStyle = () => (
     .faq-item:hover {
       background: ${C.surfaceHigh};
     }
+
+    @keyframes pulseRing {
+      0%, 100% { opacity: .6; r: 10; }
+      50% { opacity: 0; r: 18; }
+    }
+
+    @keyframes logIn {
+      from { opacity: 0; transform: translateX(-6px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @media (max-width: 640px) {
+      .hide-mobile { display: none !important; }
+      .stack-mobile { flex-direction: column !important; align-items: stretch !important; }
+      .full-mobile { width: 100% !important; }
+    }
   `}</style>
 );
 
@@ -214,299 +230,204 @@ function FadeSection({ children, delay = 0, style = {} }: { children: React.Reac
   );
 }
 
-// ─── ANIMATED WORKFLOW CANVAS ─────────────────────────────────────────────────
-const WORKFLOW_NODES = [
-  { id: "trigger", x: 60, y: 160, label: "Webhook", sublabel: "POST /trigger", color: C.warn, icon: "⚡" },
-  { id: "gpt", x: 240, y: 80, label: "GPT-4o", sublabel: "Analyze intent", color: C.primary, icon: "◎" },
-  { id: "claude", x: 240, y: 240, label: "Claude", sublabel: "Draft response", color: C.primary, icon: "◎" },
-  { id: "condition", x: 430, y: 160, label: "Condition", sublabel: "confidence > 0.8", color: "#A78BFA", icon: "◇" },
-  { id: "db", x: 610, y: 80, label: "Database", sublabel: "INSERT result", color: C.success, icon: "⊞" },
-  { id: "slack", x: 610, y: 240, label: "Slack API", sublabel: "Notify team", color: C.success, icon: "⊡" },
-  { id: "output", x: 790, y: 160, label: "Output", sublabel: "Response sent", color: C.success, icon: "✓" },
+// ─── WORKFLOW SVG ─────────────────────────────────────────────────────────────
+const NW = 130, NH = 52;
+const NODES = [
+  { id: "webhook",    x: 20,  y: 134, label: "Webhook",   sub: "POST /trigger",    color: C.warn,    icon: "⚡" },
+  { id: "gpt",        x: 200, y: 46,  label: "GPT-4o",    sub: "Analyze intent",   color: C.primary, icon: "◎" },
+  { id: "claude",     x: 200, y: 222, label: "Claude",    sub: "Draft response",   color: "#CC785C", icon: "◎" },
+  { id: "condition",  x: 380, y: 134, label: "Condition", sub: "score > 0.8",      color: "#A78BFA", icon: "◇" },
+  { id: "db",         x: 560, y: 46,  label: "Database",  sub: "INSERT result",    color: C.success, icon: "⊞" },
+  { id: "slack",      x: 560, y: 222, label: "Slack API", sub: "Notify team",      color: "#4A90D9", icon: "⊡" },
+  { id: "output",     x: 710, y: 134, label: "Output",    sub: "Response ready",   color: C.success, icon: "✓" },
+];
+const EDGES = [
+  { from: "webhook", to: "gpt" },
+  { from: "webhook", to: "claude" },
+  { from: "gpt",     to: "condition" },
+  { from: "claude",  to: "condition" },
+  { from: "condition",to: "db" },
+  { from: "condition",to: "slack" },
+  { from: "db",      to: "output" },
+  { from: "slack",   to: "output" },
 ];
 
-const WORKFLOW_EDGES = [
-  { from: "trigger", to: "gpt" },
-  { from: "trigger", to: "claude" },
-  { from: "gpt", to: "condition" },
-  { from: "claude", to: "condition" },
-  { from: "condition", to: "db" },
-  { from: "condition", to: "slack" },
-  { from: "db", to: "output" },
-  { from: "slack", to: "output" },
-];
+const nc = (id: string) => { const n = NODES.find(n => n.id === id)!; return { x: n.x + NW / 2, y: n.y + NH / 2 }; };
+const exitPt  = (id: string) => { const n = NODES.find(n => n.id === id)!; return { x: n.x + NW, y: n.y + NH / 2 }; };
+const entryPt = (id: string) => { const n = NODES.find(n => n.id === id)!; return { x: n.x,      y: n.y + NH / 2 }; };
 
-function getNodeCenter(id: string, nodes: typeof WORKFLOW_NODES) {
-  const n = nodes.find(n => n.id === id);
-  if (!n) return { x: 0, y: 0 };
-  return { x: n.x + 70, y: n.y + 28 };
+function edgePath(fromId: string, toId: string) {
+  const a = exitPt(fromId), b = entryPt(toId);
+  const mx = (a.x + b.x) / 2;
+  return `M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`;
 }
 
-function WorkflowCanvas({ running, activeNodes, compact = false }: { running?: boolean; activeNodes?: string[]; compact?: boolean }) {
-  const scale = compact ? 0.62 : 1;
-  const W = 900, H = 360;
-
+function WorkflowSVG({ activeNodes = [], showAll = false, animEdges = false }: { activeNodes?: string[]; showAll?: boolean; animEdges?: boolean }) {
+  const VW = 860, VH = 320;
   return (
-    <div style={{
-      position: "relative",
-      width: compact ? W * scale : "100%",
-      height: H * scale,
-      overflow: "hidden",
-    }}>
-      <svg
-        width={W * scale}
-        height={H * scale}
-        viewBox={`0 0 ${W} ${H}`}
-        style={{ position: "absolute", top: 0, left: 0 }}
-      >
-        <defs>
-          <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
-            <path d="M 24 0 L 0 0 0 24" fill="none" stroke={C.border} strokeWidth="0.5" />
-          </pattern>
-          <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
-            <polygon points="0 0, 6 2, 0 4" fill={C.textMuted} />
-          </marker>
-          <marker id="arrowhead-active" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
-            <polygon points="0 0, 6 2, 0 4" fill={C.primary} />
-          </marker>
-        </defs>
-        <rect width={W} height={H} fill="transparent" />
-        <rect width={W} height={H} fill="url(#grid)" opacity="0.3" />
+    <svg viewBox={`0 0 ${VW} ${VH}`} width="100%" style={{ display: "block", overflow: "visible" }} aria-hidden="true">
+      <defs>
+        <pattern id="wgrid" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke={C.border} strokeWidth="0.4"/>
+        </pattern>
+        <marker id="arr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+          <polygon points="0 0, 7 2.5, 0 5" fill={C.border}/>
+        </marker>
+        <marker id="arr-active" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+          <polygon points="0 0, 7 2.5, 0 5" fill={C.primary}/>
+        </marker>
+        <marker id="arr-done" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+          <polygon points="0 0, 7 2.5, 0 5" fill={C.success}/>
+        </marker>
+      </defs>
 
-        {WORKFLOW_EDGES.map((edge, i) => {
-          const from = getNodeCenter(edge.from, WORKFLOW_NODES);
-          const to = getNodeCenter(edge.to, WORKFLOW_NODES);
-          const activeSet = activeNodes ?? [];
-          const isActive = running && activeSet.includes(edge.from) && activeSet.includes(edge.to);
-          const mx = (from.x + to.x) / 2;
-          return (
-            <g key={i}>
-              <path
-                d={`M ${from.x} ${from.y} C ${mx} ${from.y}, ${mx} ${to.y}, ${to.x} ${to.y}`}
-                fill="none"
-                stroke={isActive ? C.primary : C.border}
-                strokeWidth={isActive ? 1.5 : 1}
-                markerEnd={isActive ? "url(#arrowhead-active)" : "url(#arrowhead)"}
-                opacity={isActive ? 1 : 0.5}
-                style={isActive ? {
-                  strokeDasharray: "8 4",
-                  animation: "flow-dash 0.4s linear infinite",
-                } as React.CSSProperties : {}}
-              />
-            </g>
-          );
-        })}
-      </svg>
+      <rect width={VW} height={VH} fill="url(#wgrid)" opacity=".5"/>
 
-      {WORKFLOW_NODES.map((node) => {
-        const activeSet = activeNodes ?? [];
-        const isActive = running && activeSet.includes(node.id);
-        const isDone = running && !activeSet.includes(node.id) &&
-          activeSet.some(() => WORKFLOW_EDGES.some(e => e.from === node.id));
-
+      {EDGES.map((e, i) => {
+        const fromDone = showAll || activeNodes.includes(e.from);
+        const toDone   = showAll || activeNodes.includes(e.to);
+        const isActive = animEdges && fromDone && toDone;
+        const isDone   = !animEdges && (showAll || (fromDone && toDone));
+        const d = edgePath(e.from, e.to);
         return (
-          <div
-            key={node.id}
-            style={{
-              position: "absolute",
-              left: node.x * scale,
-              top: node.y * scale,
-              width: 140 * scale,
-              background: C.surface,
-              border: `1px solid ${isActive ? node.color : isDone ? C.success : C.border}`,
-              borderRadius: 8 * scale,
-              padding: `${8 * scale}px ${10 * scale}px`,
-              boxShadow: isActive ? `0 0 16px ${node.color}44` : isDone ? `0 0 8px ${C.success}33` : "none",
-              transition: "all 0.3s ease",
-              animation: isActive ? `pulse-node 1.5s ease infinite` : "none",
-              cursor: "default",
-              userSelect: "none",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 6 * scale, marginBottom: 2 * scale }}>
-              <span style={{
-                fontSize: 11 * scale,
-                color: isActive ? node.color : isDone ? C.success : C.textMuted
-              }}>{node.icon}</span>
-              <span style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 11 * scale,
-                fontWeight: 700,
-                color: isActive ? node.color : isDone ? C.success : C.textPrimary,
-                letterSpacing: "0.01em",
-              }}>{node.label}</span>
-              {isDone && (
-                <span style={{ marginLeft: "auto", color: C.success, fontSize: 10 * scale }}>✓</span>
-              )}
-              {isActive && (
-                <span style={{ marginLeft: "auto" }}>
-                  {[0, 1, 2].map(i => (
-                    <span key={i} style={{
-                      display: "inline-block", width: 4 * scale, height: 4 * scale,
-                      background: node.color, borderRadius: "50%", marginLeft: 2 * scale,
-                      animation: `dot-blink 1.4s ${i * 0.2}s ease infinite`,
-                    }} />
-                  ))}
-                </span>
-              )}
-            </div>
-            <div style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 9 * scale,
-              color: C.textMuted,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}>{node.sublabel}</div>
-          </div>
+          <g key={i}>
+            <path d={d} fill="none" stroke={C.border} strokeWidth="1.2" opacity=".5"/>
+            {(isActive || isDone) && (
+              <path d={d} fill="none"
+                stroke={isDone ? C.success : C.primary}
+                strokeWidth="1.5"
+                strokeDasharray={isActive ? "8 5" : "none"}
+                markerEnd={isDone ? "url(#arr-done)" : "url(#arr-active)"}
+                style={isActive ? { animation: "fadeDash .45s linear infinite" } as React.CSSProperties : {}}
+                opacity={isActive ? .9 : .75}
+              />
+            )}
+            {!isActive && !isDone && (
+              <path d={d} fill="none" stroke="transparent" strokeWidth="1" markerEnd="url(#arr)"/>
+            )}
+          </g>
         );
       })}
-    </div>
+
+      {NODES.map(n => {
+        const isActive = animEdges && activeNodes.includes(n.id);
+        const isDone   = !animEdges && (showAll || activeNodes.includes(n.id));
+        const borderCol = isActive ? n.color : isDone ? C.success : C.border;
+        const textCol   = isActive ? n.color : isDone ? C.success : C.textPrimary;
+        return (
+          <g key={n.id}>
+            {(isActive || isDone) && (
+              <rect x={n.x - 3} y={n.y - 3} width={NW + 6} height={NH + 6}
+                rx="11" fill={isActive ? n.color : C.success} opacity=".08"
+              />
+            )}
+            <rect x={n.x} y={n.y} width={NW} height={NH} rx="9"
+              fill={C.surface} stroke={borderCol} strokeWidth={isActive || isDone ? "1.5" : "1"}/>
+            <text x={n.x + 12} y={n.y + 22} fontSize="13" fill={isActive ? n.color : isDone ? C.success : C.textMuted}
+              fontFamily="'Inter',sans-serif">{n.icon}</text>
+            <text x={n.x + 30} y={n.y + 22} fontSize="11.5" fontWeight="700" fill={textCol}
+              fontFamily="'Plus Jakarta Sans',sans-serif" letterSpacing="-.2">{n.label}</text>
+            {isDone && !isActive && (
+              <text x={n.x + NW - 16} y={n.y + 22} fontSize="11" fill={C.success} fontFamily="'Inter',sans-serif">✓</text>
+            )}
+            <text x={n.x + 12} y={n.y + 39} fontSize="9.5" fill={C.textMuted}
+              fontFamily="'JetBrains Mono',monospace">{n.sub}</text>
+            {isActive && (
+              <circle cx={n.x + NW - 10} cy={n.y + 12} r="5" fill="none"
+                stroke={n.color} strokeWidth="1.5" opacity=".7"
+                style={{ animation: "pulseRing 1.4s ease-out infinite" } as React.CSSProperties }/>
+            )}
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
 // ─── EXECUTION DEMO ───────────────────────────────────────────────────────────
-const EXECUTION_SEQUENCE = [
-  { nodes: ["trigger"], log: "> Webhook received — POST /trigger", delay: 0 },
-  { nodes: ["trigger", "gpt"], log: "> GPT-4o: analyzing intent...", delay: 900 },
-  { nodes: ["trigger", "claude"], log: "> Claude: drafting response...", delay: 1200 },
-  { nodes: ["trigger", "gpt", "claude", "condition"], log: "> Condition: confidence=0.94 → true", delay: 2400 },
-  { nodes: ["trigger", "gpt", "claude", "condition", "db"], log: "> Database: INSERT successful (id=8821)", delay: 3200 },
-  { nodes: ["trigger", "gpt", "claude", "condition", "db", "slack"], log: "> Slack: #alerts notified ✓", delay: 3800 },
-  { nodes: ["trigger", "gpt", "claude", "condition", "db", "slack", "output"], log: "> Execution complete — 4.2s ✓", delay: 4500 },
+const EXEC_SEQ = [
+  { nodes: ["webhook"],                                         log: "> Webhook received — POST /trigger",      ms: 0    },
+  { nodes: ["webhook","gpt"],                                   log: "> GPT-4o: analyzing intent...",            ms: 800  },
+  { nodes: ["webhook","gpt","claude"],                          log: "> Claude: drafting response...",           ms: 1100 },
+  { nodes: ["webhook","gpt","claude","condition"],              log: "> Condition: score=0.94 → true",           ms: 2200 },
+  { nodes: ["webhook","gpt","claude","condition","db"],         log: "> Database: INSERT ok (id=8821)",          ms: 3000 },
+  { nodes: ["webhook","gpt","claude","condition","db","slack"], log: "> Slack: #alerts notified ✓",             ms: 3700 },
+  { nodes: ["webhook","gpt","claude","condition","db","slack","output"], log: "> Execution complete · 4.1s ✓",  ms: 4400 },
 ];
 
 function ExecutionDemo() {
-  const [running, setRunning] = useState(false);
-  const [step, setStep] = useState(-1);
-  const [logs, setLogs] = useState<string[]>([]);
-  const [progress, setProgress] = useState(0);
-  const [completed, setCompleted] = useState(false);
-  const timeouts = useRef<NodeJS.Timeout[]>([]);
+  const [state, setState] = useState<"idle"|"running"|"done">("idle");
+  const [step, setStep]   = useState(-1);
+  const [logs, setLogs]   = useState<string[]>([]);
+  const [pct,  setPct]    = useState(0);
+  const timers = useRef<NodeJS.Timeout[]>([]);
 
-  const runDemo = useCallback(() => {
-    if (running) return;
-    setRunning(true);
-    setStep(-1);
-    setLogs([]);
-    setProgress(0);
-    setCompleted(false);
-    timeouts.current.forEach(clearTimeout);
-    timeouts.current = [];
-
-    EXECUTION_SEQUENCE.forEach((seq, i) => {
+  const run = useCallback(() => {
+    if (state === "running") return;
+    setState("running"); setStep(-1); setLogs([]); setPct(0);
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+    EXEC_SEQ.forEach((seq, i) => {
       const t = setTimeout(() => {
         setStep(i);
         setLogs(prev => [...prev, seq.log]);
-        setProgress(Math.round(((i + 1) / EXECUTION_SEQUENCE.length) * 100));
-        if (i === EXECUTION_SEQUENCE.length - 1) {
-          setTimeout(() => { setRunning(false); setCompleted(true); }, 600);
-        }
-      }, seq.delay);
-      timeouts.current.push(t);
+        setPct(Math.round(((i + 1) / EXEC_SEQ.length) * 100));
+        if (i === EXEC_SEQ.length - 1) setTimeout(() => setState("done"), 500);
+      }, seq.ms);
+      timers.current.push(t);
     });
-  }, [running]);
+  }, [state]);
 
-  const activeNodes = step >= 0 ? EXECUTION_SEQUENCE[step].nodes : [];
+  const reset = () => { setState("idle"); setStep(-1); setLogs([]); setPct(0); timers.current.forEach(clearTimeout); };
+
+  const activeNodes = step >= 0 ? EXEC_SEQ[step].nodes : [];
 
   return (
-    <div style={{
-      background: C.surface,
-      border: `1px solid ${C.border}`,
-      borderRadius: 16,
-      overflow: "hidden",
-    }}>
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "12px 20px",
-        borderBottom: `1px solid ${C.border}`,
-        background: C.surfaceHigh,
-      }}>
-        <div style={{ display: "flex", gap: 8 }}>
-          {["#FF5F57", "#FEBC2E", "#28C840"].map((c, i) => (
-            <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
-          ))}
+    <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, overflow:"hidden" }}>
+      {/* toolbar */}
+      <div style={{ background:C.surfaceHigh, borderBottom:`1px solid ${C.border}`, padding:"11px 18px", display:"flex", alignItems:"center", gap:10 }}>
+        {["#FF5F57","#FEBC2E","#28C840"].map((c,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:c}}/>)}
+        <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:8, fontSize:11, fontFamily:"'JetBrains Mono',monospace", color:C.textMuted }}>
+          <span style={{ width:6,height:6,borderRadius:"50%",display:"inline-block",
+            background: state==="running" ? C.warn : state==="done" ? C.success : C.textMuted,
+            animation: state==="running" ? "pulseRing 1.2s ease-out infinite" : "none"
+          } as React.CSSProperties}/>
+          {state==="idle" ? "Ready to run" : state==="running" ? `Executing · ${pct}%` : "Completed · 4.1s ✓"}
         </div>
-        <div style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
-          color: C.textMuted,
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-        }}>
-          <span style={{
-            width: 6, height: 6, borderRadius: "50%",
-            background: running ? C.warn : completed ? C.success : C.textMuted,
-            display: "inline-block",
-            animation: running ? "pulse-node 1s infinite" : "none",
-          }} />
-          {running ? "Running..." : completed ? "Completed · 4.2s" : "Ready"}
+        <div style={{ display:"flex", gap:8 }}>
+          {state !== "idle" && (
+            <button onClick={reset} style={{ background:"transparent", border:`1px solid ${C.border}`, color:C.textMuted, borderRadius:7, padding:"5px 12px", fontSize:12, fontFamily:"'Inter',sans-serif", cursor:"pointer" }}
+              className="btn-ghost">Reset</button>
+          )}
+          <button onClick={run} disabled={state==="running"} className="btn-primary"
+            style={{ background: state==="running" ? C.border : C.primary, color: state==="running" ? C.textMuted : "#fff",
+              border:"none", borderRadius:7, padding:"5px 16px", fontSize:12, fontWeight:700, fontFamily:"'Inter',sans-serif",
+              cursor: state==="running" ? "not-allowed" : "pointer" }}>
+            {state==="running" ? "Running…" : state==="done" ? "▶ Run Again" : "▶ Run Workflow"}
+          </button>
         </div>
-        <button
-          onClick={runDemo}
-          disabled={running}
-          className="cta-button"
-          style={{
-            background: running ? C.border : C.primary,
-            color: running ? C.textMuted : "white",
-            border: "none",
-            borderRadius: 6,
-            padding: "6px 16px",
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: running ? "not-allowed" : "pointer",
-            fontFamily: "'Inter', sans-serif",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
-          {running ? "Running" : "▶ Run Workflow"}
-        </button>
       </div>
 
-      <div style={{ padding: "24px 24px 16px", overflowX: "auto" }}>
-        <WorkflowCanvas running={running || completed} activeNodes={activeNodes} compact={true} />
+      {/* canvas */}
+      <div style={{ padding:"28px 24px 16px", width:"100%" }}>
+        <WorkflowSVG activeNodes={activeNodes} animEdges={state==="running"} showAll={state==="done"} />
       </div>
 
-      {(running || completed) && (
-        <div style={{ margin: "0 24px", height: 2, background: C.border, borderRadius: 1 }}>
-          <div style={{
-            height: "100%",
-            background: `linear-gradient(90deg, ${C.primary}, ${C.success})`,
-            borderRadius: 1,
-            width: `${progress}%`,
-            transition: "width 0.4s ease",
-          }} />
+      {/* progress */}
+      {state !== "idle" && (
+        <div style={{ margin:"0 24px 4px", height:2, background:C.border, borderRadius:1 }}>
+          <div style={{ height:"100%", width:`${pct}%`, background:`linear-gradient(90deg,${C.primary},${C.success})`, borderRadius:1, transition:"width .4s ease" }}/>
         </div>
       )}
 
-      <div style={{
-        margin: "12px 24px 20px",
-        background: C.bg,
-        border: `1px solid ${C.border}`,
-        borderRadius: 8,
-        padding: "12px 14px",
-        minHeight: 100,
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 11,
-        color: C.textMuted,
-      }}>
-        {logs.length === 0 ? (
-          <span style={{ color: C.textMuted }}>_ Hit &ldquo;Run Workflow&rdquo; to see live execution</span>
-        ) : (
-          logs.map((log, i) => (
-            <div key={i} className="log-line" style={{
-              marginBottom: 4,
-              color: log.includes("complete") ? C.success : log.includes("✓") ? C.success : C.textSecondary,
-            }}>
-              {log}
-            </div>
+      {/* log terminal */}
+      <div style={{ margin:"12px 24px 20px", background:C.bg, border:`1px solid ${C.border}`, borderRadius:9, padding:"12px 14px", minHeight:96, fontFamily:"'JetBrains Mono',monospace", fontSize:11.5 }}>
+        {logs.length === 0
+          ? <span style={{ color:C.textMuted }}>_ Hit "Run Workflow" to see live execution logs</span>
+          : logs.map((l,i) => (
+            <div key={i} style={{ marginBottom:4, color: l.includes("✓") ? C.success : C.textSecondary, animation:"logIn .25s ease" }}>{l}</div>
           ))
-        )}
+        }
       </div>
     </div>
   );
@@ -737,8 +658,8 @@ function Hero({ onWaitlist }: { onWaitlist: () => void }) {
               <strong style={{ color: C.textSecondary }}>1,400+ founders</strong> on the waitlist
             </span>
           </div>
-          <div style={{ width: 1, height: 14, background: C.border }} />
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div className="hide-mobile" style={{ width: 1, height: 14, background: C.border }} />
+          <div className="hide-mobile" style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {[1,2,3,4,5].map(i => (
               <span key={i} style={{ color: "#FBBF24", fontSize: 12 }}>★</span>
             ))}
@@ -777,10 +698,14 @@ function Hero({ onWaitlist }: { onWaitlist: () => void }) {
               fontSize: 11,
               color: C.textMuted,
               fontFamily: "'JetBrains Mono', monospace",
-            }}>orqestra · customer-intelligence-workflow</span>
+            }}>orqestra · customer-intelligence · running</span>
+          <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.success }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.success, display: "inline-block", animation: "pulseRing 1.4s ease-out infinite" }} />
+            Live
+          </span>
           </div>
           <div style={{ padding: "24px", overflowX: "auto" }}>
-            <WorkflowCanvas running={true} activeNodes={["trigger", "gpt", "claude"]} compact={false} />
+            <WorkflowSVG activeNodes={["webhook", "gpt", "claude"]} animEdges={true} />
           </div>
         </div>
         <div style={{
