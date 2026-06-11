@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
           /* Header */
           `<tr><td style="padding:40px 40px 0;">`,
           `<table role="presentation" width="100%"><tr>`,
-          `<td><svg width="160" height="40" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg"><text x="0" y="46" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="38" font-weight="400" fill="#F8FAFC" letter-spacing="-0.5">Orqestra</text><text x="0" y="68" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="18" font-weight="500" fill="#6366F1" letter-spacing="3">OS</text></svg></td>`,
+          `<td style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:22px;font-weight:400;color:#F8FAFC;letter-spacing:-0.5px;">Orqestra <span style="font-size:12px;font-weight:600;color:#6366F1;letter-spacing:3px;">OS</span></td>`,
           `<td align="right"><span style="display:inline-block;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:600;color:#6366F1;letter-spacing:0.08em;">BETA</span></td>`,
           `</tr></table>`,
           `</td></tr>`,
