@@ -8,7 +8,7 @@ export default function TermsPage() {
           <p><strong className="text-text-hi">Use of Service.</strong> Orqestra OS is provided as a pre-release product. The software is provided &ldquo;as is&rdquo; without warranty of any kind. We may change, suspend, or discontinue any part of the service at any time.</p>
           <p><strong className="text-text-hi">Limitation of Liability.</strong> In no event shall Orqestra OS be liable for any indirect, incidental, or consequential damages arising from your use of the service.</p>
           <p><strong className="text-text-hi">Changes.</strong> We reserve the right to update these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms.</p>
-          <p><strong className="text-text-hi">Contact.</strong> For questions, reach out to orquestra.team@gmail.com.</p>
+          <p><strong className="text-text-hi">Contact.</strong> For questions, reach out to orqestra.team@gmail.com.</p>
         </div>
       </div>
     </main>
