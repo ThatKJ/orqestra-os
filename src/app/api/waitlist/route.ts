@@ -2,13 +2,21 @@ import { NextRequest } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { transporter } from "@/lib/email";
 import { waitlistSchema } from "@/lib/validation";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, extractIp } from "@/lib/rate-limit";
+
+function sanitizeEmailHeader(value: string): string {
+  return value.replace(/[\r\n]/g, "").trim();
+}
+
+const ALLOWED_SOURCES = ["direct", "google", "twitter", "github", "instagram", "linkedin", "producthunt"] as const;
+type Source = typeof ALLOWED_SOURCES[number];
+
+function validateSource(value: string): string {
+  return ALLOWED_SOURCES.includes(value as Source) ? value : "direct";
+}
 
 export async function POST(request: NextRequest) {
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip") ||
-    "127.0.0.1";
+  const ip = extractIp(request);
 
   const rateLimit = checkRateLimit(ip);
   if (!rateLimit.allowed) {
@@ -49,11 +57,8 @@ export async function POST(request: NextRequest) {
   }
 
   const { email, name, company, useCase } = parsed.data;
-  const source =
-    (body.source as string) ||
-    request.nextUrl.searchParams.get("utm_source") ||
-    request.nextUrl.searchParams.get("source") ||
-    "direct";
+  const utmSource = request.nextUrl.searchParams.get("utm_source") || request.nextUrl.searchParams.get("source") || "direct";
+  const source = validateSource(utmSource);
 
   const { error: insertError } = await getSupabase()
     .from("waitlist")
@@ -274,7 +279,7 @@ export async function POST(request: NextRequest) {
         await transporter.sendMail({
           from: `"Orqestra OS" <${from}>`,
           to: notificationEmail,
-          subject: `New Waitlist Signup: ${email}`,
+          subject: `New Waitlist Signup: ${sanitizeEmailHeader(email)}`,
           text: [
             `New waitlist signup for Orqestra OS`,
             ``,

@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import { createSession, deleteSession } from "@/lib/sessions";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const { password } = await request.json();
   const adminPassword = process.env.ADMIN_PASSWORD;
 
@@ -8,9 +9,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid password" }, { status: 401 });
   }
 
+  const token = await createSession();
   const response = NextResponse.json({ success: true });
 
-  response.cookies.set("admin_session", adminPassword, {
+  response.cookies.set("admin_session", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -21,7 +23,12 @@ export async function POST(request: Request) {
   return response;
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  const sessionToken = request.cookies.get("admin_session")?.value;
+  if (sessionToken) {
+    deleteSession(sessionToken);
+  }
+
   const response = NextResponse.json({ success: true });
 
   response.cookies.set("admin_session", "", {

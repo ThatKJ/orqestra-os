@@ -23,3 +23,14 @@ export function checkRateLimit(ip: string): {
   record.count++;
   return { allowed: true, remaining: MAX_REQUESTS - record.count, resetAt: record.resetAt };
 }
+
+export function extractIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    const ips = forwarded.split(",").map(s => s.trim()).filter(Boolean);
+    if (ips.length > 0) return ips[0];
+  }
+  const realIp = request.headers.get("x-real-ip");
+  if (realIp) return realIp;
+  return "127.0.0.1";
+}

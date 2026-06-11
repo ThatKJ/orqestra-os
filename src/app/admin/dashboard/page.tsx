@@ -17,7 +17,11 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
   const limit = 15;
   const offset = (page - 1) * limit;
   const search = params.search || "";
-  const sortBy = params.sortBy || "created_at";
+  const ALLOWED_SORT_COLUMNS = ["created_at", "email", "name", "company", "use_case", "source"] as const;
+  type SortColumn = typeof ALLOWED_SORT_COLUMNS[number];
+  const sortBy: string = ALLOWED_SORT_COLUMNS.includes(params.sortBy as SortColumn)
+    ? params.sortBy!
+    : "created_at";
   const sortOrder = params.sortOrder === "asc" ? "asc" : "desc";
 
   const sb = getSupabaseAdmin().from("waitlist");
